@@ -33,6 +33,8 @@
                             accent: '#ffeb19',       /* The requested bright yellow (for backgrounds/graphics) */
                             'accent-text': '#D4BD00', /* Darker gold/yellow for text readability */
                             'accent-light': '#FFF599', /* Pastel yellow for soft backgrounds */
+                            'accent-strong': '#F4C000', /* Richer gold for higher-contrast highlights */
+                            'accent-deep': '#9A6B00', /* Deeper gold for emphasis text */
                             
                             light: '#DDE2C8',    /* Light Green */
                             dark: '#374151',     /* Main Text */
@@ -143,6 +145,86 @@
             transition: transform 6000ms ease-out;
             transform: scale(1);
         }
+
+        /* Contact Modal */
+        .contact-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.45);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 200ms ease, visibility 200ms ease;
+            z-index: 60;
+        }
+        .contact-overlay.is-open {
+            opacity: 1;
+            visibility: visible;
+        }
+        .contact-modal {
+            background: #ffffff;
+            border-radius: 18px;
+            width: min(92vw, 460px);
+            box-shadow: 0 24px 60px -20px rgba(15, 23, 42, 0.4);
+            transform: translateY(8px) scale(0.98);
+            opacity: 0;
+            transition: transform 220ms ease, opacity 220ms ease;
+        }
+        .contact-overlay.is-open .contact-modal {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+        }
+        .contact-link {
+            font-size: 0.65rem;
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.75);
+            text-decoration: none;
+            line-height: 1.05;
+            text-align: center;
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            transition: color 200ms ease;
+        }
+        .contact-link-line {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.2rem;
+        }
+        .contact-link-icon {
+            font-size: 0.7rem;
+            line-height: 1;
+            color: #ffffff;
+        }
+        .contact-link:hover {
+            color: #ffffff;
+        }
+        .contact-option {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            border: 1px solid #e5e7eb;
+            padding: 0.35rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            color: #374151;
+            transition: border-color 200ms ease, color 200ms ease, background-color 200ms ease;
+            cursor: pointer;
+        }
+        .contact-option input {
+            accent-color: #ffeb19;
+        }
+        .contact-option.is-active {
+            border-color: #ffeb19;
+            color: #111827;
+            background-color: rgba(255, 235, 25, 0.15);
+        }
+        .contact-field[hidden] {
+            display: none;
+        }
     </style>
 </head>
 <body class="bg-adna-bg text-adna-dark antialiased selection:bg-adna-accent selection:text-black">
@@ -153,10 +235,7 @@
             <div class="flex justify-between items-center h-20">
                 <!-- Logo -->
                 <div class="flex-shrink-0 flex items-center group cursor-pointer">
-                    <!-- Logo text is now yellow (adna-accent) to pop against dark green -->
-                    <span class="text-3xl font-serif font-bold text-adna-accent tracking-tight group-hover:opacity-80 transition-opacity">
-                        Adnà
-                    </span>
+                    <img src="ADNA-Logotype-SOLEIL-RGB-01.svg" alt="Adnà" class="h-16 w-auto transition-opacity group-hover:opacity-80">
                 </div>
 
                 <!-- Desktop Menu -->
@@ -169,12 +248,21 @@
 
                 <!-- Right Actions -->
                 <div class="hidden md:flex items-center space-x-6">
-                    <a href="tel:514-233-5456" class="flex items-center space-x-2 group rounded-full bg-white/10 px-3 py-1.5 border border-adna-accent/60 shadow-sm shadow-adna-accent/10 hover:bg-adna-accent/15 transition-colors">
-                        <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-adna-accent/20 transition-colors">
-                            <i class="fa-solid fa-phone text-adna-accent text-xs"></i>
-                        </div>
-                        <span class="text-sm font-semibold text-white group-hover:text-adna-accent transition-colors">514 233-5456</span>
-                    </a>
+                    <div class="flex items-center gap-2">
+                        <a href="tel:514-233-5456" class="flex items-center space-x-2 group rounded-full bg-white/10 px-3 py-1.5 border border-adna-accent/60 shadow-sm shadow-adna-accent/10 hover:bg-adna-accent/15 transition-colors">
+                            <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-adna-accent/20 transition-colors">
+                                <i class="fa-solid fa-phone text-adna-accent text-xs"></i>
+                            </div>
+                            <span class="text-sm font-semibold text-white group-hover:text-adna-accent transition-colors">514 233-5456</span>
+                        </a>
+                        <button id="contact-link" class="contact-link" type="button">
+                            <span class="contact-link-line">
+                                <span class="contact-link-icon" aria-hidden="true">↪︎</span>
+                                <span>Contactez</span>
+                            </span>
+                            <span class="contact-link-line">moi</span>
+                        </button>
+                    </div>
                     
                     <div class="h-4 w-px bg-white/20"></div>
 
@@ -282,8 +370,8 @@
                                                 <p class="text-xs font-semibold uppercase tracking-[0.3em] text-adna-anchor/70">Sélection</p>
                                                 <h3 class="text-2xl sm:text-3xl font-bold text-gray-900">Tests populaires</h3>
                                             </div>
-                                            <span class="hidden sm:inline-flex items-center gap-2 rounded-full bg-adna-accent/30 px-3 py-1 text-xs font-semibold text-adna-anchor">
-                                                <i class="fa-solid fa-star text-adna-anchor"></i>
+                                            <span class="hidden sm:inline-flex items-center gap-2 rounded-full bg-adna-accent-strong px-3 py-1 text-xs font-semibold text-gray-900 shadow-sm shadow-adna-accent-strong/40">
+                                                <i class="fa-solid fa-star text-gray-900"></i>
                                                 Top ventes
                                             </span>
                                         </div>
@@ -299,7 +387,7 @@
                                                     <p class="text-sm italic text-gray-500">Confirmation fiable des liens familiaux</p>
                                                 </div>
                                                 <div class="text-right">
-                                                    <p class="text-lg font-extrabold text-adna-accent-text">199,00 $</p>
+                                                    <p class="text-lg font-extrabold text-adna-anchor">199,00 $</p>
                                                 </div>
                                             </a>
 
@@ -313,7 +401,7 @@
                                                     <p class="text-sm italic text-gray-500">Explorez votre ascendance et vos origines</p>
                                                 </div>
                                                 <div class="text-right">
-                                                    <p class="text-lg font-extrabold text-adna-accent-text">499,00 $</p>
+                                                    <p class="text-lg font-extrabold text-adna-anchor">499,00 $</p>
                                                 </div>
                                             </a>
 
@@ -327,7 +415,7 @@
                                                     <p class="text-sm italic text-gray-500">Conseils personnalisés selon votre ADN</p>
                                                 </div>
                                                 <div class="text-right">
-                                                    <p class="text-lg font-extrabold text-adna-accent-text">149,00 $</p>
+                                                    <p class="text-lg font-extrabold text-adna-anchor">149,00 $</p>
                                                 </div>
                                             </a>
 
@@ -730,7 +818,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 mb-12">
                 <div class="col-span-2 lg:col-span-1">
-                    <span class="text-2xl font-serif font-bold text-adna-anchor">Adnà</span>
+                    <img src="ADNA-Logotype-CONIFERE-RGB-01.svg" alt="Adnà" class="h-14 w-auto">
                     <p class="text-sm text-gray-500 mt-4 leading-relaxed">
                         L'expert québécois en tests génétiques à domicile. Fiable, rapide et humain.
                     </p>
@@ -789,6 +877,60 @@
         </div>
     </footer>
 
+    <div id="contact-overlay" class="contact-overlay" aria-hidden="true">
+        <div class="contact-modal" role="dialog" aria-modal="true" aria-labelledby="contact-title">
+            <div class="flex items-start justify-between px-6 pt-6 pb-3">
+                <h2 id="contact-title" class="text-xl font-semibold text-gray-900">Me contacter</h2>
+                <button id="contact-close" class="text-gray-400 hover:text-gray-700 transition-colors" type="button" aria-label="Fermer la fenêtre">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <div class="px-6 pb-6">
+                <p class="text-sm text-gray-600 mb-5">
+                    Choisissez votre méthode de contact et nous vous contacterons dès que possible.
+                </p>
+                <form id="contact-form" class="space-y-4" novalidate>
+                    <fieldset class="space-y-3">
+                        <legend class="text-sm font-medium text-gray-700">Méthode de contact</legend>
+                        <div class="flex flex-wrap gap-3">
+                            <label class="contact-option is-active">
+                                <input type="radio" name="contact-method" value="email" checked>
+                                <span>Courriel</span>
+                            </label>
+                            <label class="contact-option">
+                                <input type="radio" name="contact-method" value="phone">
+                                <span>Téléphone</span>
+                            </label>
+                        </div>
+                    </fieldset>
+                    <div id="contact-email-field" class="contact-field">
+                        <label for="contact-email" class="text-sm font-medium text-gray-700">Adresse courriel</label>
+                        <input id="contact-email" name="email" type="email" autocomplete="email"
+                               placeholder="ex: nom@domaine.com"
+                               class="mt-2 w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:border-adna-accent focus:ring-2 focus:ring-adna-accent/20 outline-none">
+                    </div>
+                    <div id="contact-phone-field" class="contact-field" hidden>
+                        <label for="contact-phone" class="text-sm font-medium text-gray-700">Numéro de téléphone</label>
+                        <input id="contact-phone" name="phone" type="tel" autocomplete="tel"
+                               placeholder="ex: 514 555-1234"
+                               class="mt-2 w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:border-adna-accent focus:ring-2 focus:ring-adna-accent/20 outline-none">
+                    </div>
+                    <p id="contact-error" class="text-xs text-red-600 hidden" role="alert">
+                        Veuillez entrer une adresse courriel valide.
+                    </p>
+                    <div class="flex items-center justify-end gap-3 pt-2">
+                        <button id="contact-cancel" type="button" class="text-sm text-gray-500 hover:text-gray-800 transition-colors">
+                            Annuler
+                        </button>
+                        <button type="submit" class="rounded-full bg-adna-accent px-5 py-2 text-sm font-semibold text-black shadow-sm shadow-adna-accent/30 hover:bg-adna-accent/90 transition-colors">
+                            Envoyer
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script>
         // --- Mobile Menu Toggle ---
@@ -827,6 +969,113 @@
             } else {
                 nav.classList.remove('shadow-sm');
             }
+        });
+
+        // --- Contact Modal ---
+        const contactLink = document.getElementById('contact-link');
+        const contactOverlay = document.getElementById('contact-overlay');
+        const contactClose = document.getElementById('contact-close');
+        const contactCancel = document.getElementById('contact-cancel');
+        const contactForm = document.getElementById('contact-form');
+        const contactEmail = document.getElementById('contact-email');
+        const contactPhone = document.getElementById('contact-phone');
+        const contactEmailField = document.getElementById('contact-email-field');
+        const contactPhoneField = document.getElementById('contact-phone-field');
+        const contactError = document.getElementById('contact-error');
+        const contactMethodOptions = document.querySelectorAll('input[name="contact-method"]');
+
+        const openContactModal = () => {
+            contactOverlay.classList.add('is-open');
+            contactOverlay.setAttribute('aria-hidden', 'false');
+            contactEmail.focus();
+        };
+
+        const closeContactModal = () => {
+            contactOverlay.classList.remove('is-open');
+            contactOverlay.setAttribute('aria-hidden', 'true');
+            contactError.classList.add('hidden');
+            contactEmail.setAttribute('aria-invalid', 'false');
+            contactPhone.setAttribute('aria-invalid', 'false');
+            contactForm.reset();
+            setContactMethod('email');
+        };
+
+        const isValidEmail = (value) => {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+        };
+
+        const isValidPhone = (value) => {
+            return /^[0-9+()\s.-]{7,}$/.test(value);
+        };
+
+        const setContactMethod = (method) => {
+            contactMethodOptions.forEach(option => {
+                option.checked = option.value === method;
+            });
+            contactEmailField.hidden = method !== 'email';
+            contactPhoneField.hidden = method !== 'phone';
+            document.querySelectorAll('.contact-option').forEach(option => {
+                const input = option.querySelector('input');
+                option.classList.toggle('is-active', input && input.value === method);
+            });
+            if (method === 'email') {
+                contactEmail.focus();
+            } else {
+                contactPhone.focus();
+            }
+            contactError.classList.add('hidden');
+        };
+
+        contactLink.addEventListener('click', openContactModal);
+        contactClose.addEventListener('click', closeContactModal);
+        contactCancel.addEventListener('click', closeContactModal);
+
+        contactMethodOptions.forEach(option => {
+            option.addEventListener('change', (event) => {
+                setContactMethod(event.target.value);
+            });
+        });
+
+        contactOverlay.addEventListener('click', (event) => {
+            if (event.target === contactOverlay) {
+                closeContactModal();
+            }
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && contactOverlay.classList.contains('is-open')) {
+                closeContactModal();
+            }
+        });
+
+        contactForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const selectedMethod = document.querySelector('input[name="contact-method"]:checked')?.value;
+            const emailValue = contactEmail.value.trim();
+            const phoneValue = contactPhone.value.trim();
+
+            if (selectedMethod === 'phone') {
+                contactError.textContent = 'Veuillez entrer un numéro de téléphone valide.';
+                if (!isValidPhone(phoneValue)) {
+                    contactError.classList.remove('hidden');
+                    contactPhone.setAttribute('aria-invalid', 'true');
+                    contactPhone.focus();
+                    return;
+                }
+            } else {
+                contactError.textContent = 'Veuillez entrer une adresse courriel valide.';
+                if (!isValidEmail(emailValue)) {
+                    contactError.classList.remove('hidden');
+                    contactEmail.setAttribute('aria-invalid', 'true');
+                    contactEmail.focus();
+                    return;
+                }
+            }
+
+            contactError.classList.add('hidden');
+            contactEmail.setAttribute('aria-invalid', 'false');
+            contactPhone.setAttribute('aria-invalid', 'false');
+            closeContactModal();
         });
 
         // --- Custom Image Slider Logic (Robust Version) ---
